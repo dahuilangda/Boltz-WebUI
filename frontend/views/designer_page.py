@@ -383,6 +383,15 @@ def render_designer_page():
                             constraint.pop('token1_residue', None)
                             constraint.pop('token2_chain', None)
                             constraint.pop('token2_residue', None)
+                            # 初始化pocket约束的默认值
+                            if 'binder' not in constraint:
+                                constraint['binder'] = 'BINDER_CHAIN'
+                            if 'contacts' not in constraint:
+                                constraint['contacts'] = [['A', 1], ['A', 2]]
+                            if 'max_distance' not in constraint:
+                                constraint['max_distance'] = 5.0
+                            if 'force' not in constraint:
+                                constraint['force'] = False
                         st.rerun()
                     
                     available_chains, chain_descriptions = get_available_chain_ids_for_designer(st.session_state.designer_components, binder_chain_id)
@@ -761,8 +770,8 @@ def render_designer_page():
                     #     ✅ **设计生成的新序列**中不会包含C
                     #     """)
             
-            # 添加双环肽设计的提示链接
-            st.info("💡 需要双环肽设计？请使用专门的[双环肽设计器](/bicyclic_designer)页面")
+            # # 添加双环肽设计的提示链接
+            # st.info("💡 需要双环肽设计？请使用专门的[双环肽设计器](/bicyclic_designer)页面")
     
     # 检查输入验证
     designer_is_valid, validation_message = validate_designer_inputs(st.session_state.designer_components)

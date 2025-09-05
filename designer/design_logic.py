@@ -788,24 +788,31 @@ class Designer:
                 
             elif constraint_type == 'pocket':
                 # 处理pocket约束 - 使用UI组件的字段名
-                binder_chain = constraint.get('binder_chain', '')
+                binder_chain = constraint.get('binder', '') or constraint.get('binder_chain', '')
                 if binder_chain == 'BINDER_CHAIN':
                     binder_chain = binder_chain_id
                 
                 target_chain = constraint.get('target_chain', 'A')
                 binding_site = constraint.get('binding_site', [])
                 
-                # 构建contacts格式 - [[chain, residue], ...]
+                # 处理UI组件中的contacts格式 - [[chain, residue], ...]
+                contacts_from_ui = constraint.get('contacts', [])
                 contacts = []
-                for residue in binding_site:
-                    contacts.append([target_chain, residue])
+                
+                if contacts_from_ui:
+                    # 使用UI中的contacts格式
+                    contacts = contacts_from_ui
+                elif binding_site:
+                    # 兼容旧的binding_site格式
+                    for residue in binding_site:
+                        contacts.append([target_chain, residue])
                 
                 processed_constraint = {
                     'pocket': {
                         'binder': binder_chain,
                         'contacts': contacts,
-                        'max_distance': constraint.get('force', 5.0),  # pocket UI中force字段实际存储距离值
-                        'force': True
+                        'max_distance': constraint.get('max_distance', 5.0),
+                        'force': constraint.get('force', True)
                     }
                 }
                 return processed_constraint
