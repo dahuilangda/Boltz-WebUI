@@ -786,9 +786,6 @@ def render_designer_page():
                 designer_is_valid = False
                 validation_message = f"初始序列包含无效字符: {', '.join(invalid_chars)}。请只使用标准的20种氨基酸字母。"
     
-    protein_components_with_msa = [comp for comp in st.session_state.designer_components 
-                                  if comp['type'] == 'protein' and comp.get('sequence', '').strip() and comp.get('use_msa', True)]
-    
     # 设置默认参数值 (来自高级设置中定义的参数)
     # 在高级设置展开时会被覆盖
     default_generations = 8
@@ -864,7 +861,8 @@ def render_designer_page():
         
         with st.spinner("⏳ 正在启动设计任务，请稍候..."):
             try:
-                any_msa_enabled = any(comp.get('use_msa', True) for comp in st.session_state.designer_components if comp['type'] == 'protein')
+                any_msa_enabled = any(comp.get('use_msa', True) for comp in st.session_state.designer_components 
+                                    if comp['type'] == 'protein' and comp.get('sequence', '').strip())
                 
                 template_yaml = create_designer_complex_yaml(
                     st.session_state.designer_components, 
